@@ -47,8 +47,9 @@ func initializeRoutes() {
 		{
 			adminAuth.GET("/newInviteCode", newInviteCodeHandler)
 			adminAuth.POST("/resetUserPass", resetPasswordHandler)
-			//adminAuth.GET("/list-users", listUsersHandler)
-			//adminAuth.POST("/delete-user", deleteUserHandler)
+			adminAuth.GET("/listUsers", listUsersHandler)
+			adminAuth.GET("/listInviteCodes", listInviteCodesHandler)
+			adminAuth.POST("/deleteUser", deleteUserHandler)
 		}
 	}
 }

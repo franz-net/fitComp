@@ -17,6 +17,10 @@ type user struct {
 	Code     string `form:"code" json:"code" xml:"code" db:"code"`
 }
 
+type userDeletion struct {
+	Username string `form:"username" json:"username" xml:"username" db:"username" binding:"required"`
+}
+
 type measurement struct {
 	ID       int       `form:"id" json:"id" xml:"id" db:"id"`
 	Username string    `form:"username" json:"username" xml:"username" db:"username"`
@@ -48,6 +52,27 @@ func userExists(u user) bool {
 		return false
 	}
 	defer db.Close()
+	return true
+}
+
+func deleteUser(u user) bool {
+	db := dbConn()
+	if _, err := db.Query("delete from users where username=?", u.Username); err != nil {
+		return false
+	}
+
+	if _, err := db.Query("delete from measurements where username=?", u.Username); err != nil {
+		return false
+	}
+
+	if _, err := db.Query("delete from prize where username=?", u.Username); err != nil {
+		return false
+	}
+
+	if _, err := db.Query("delete from invites where username=?", u.Username); err != nil {
+		return false
+	}
+
 	return true
 }
 
@@ -191,6 +216,54 @@ func getAllMeasurements() []measurement {
 	return res
 }
 
+func getAllUsers() []user {
+	db := dbConn()
+	result, err := db.Query("Select username, authtype FROM users")
+	if err != nil {
+		panic(err.Error())
+	}
+	u := user{}
+	res := []user{}
+	for result.Next() {
+		var username, authtype string
+		err = result.Scan(&username, &authtype)
+		if err != nil {
+			panic(err.Error())
+		}
+		u.Username = username
+		u.AuthType = authtype
+
+		res = append(res, u)
+	}
+	defer db.Close()
+	return res
+}
+
+func getAllInviteCodes() []inviteCode {
+	db := dbConn()
+	result, err := db.Query("Select * from invites")
+	if err != nil {
+		panic(err.Error())
+	}
+	ic := inviteCode{}
+	res := []inviteCode{}
+	for result.Next() {
+		var id int
+		var code, username string
+		err = result.Scan(&id, &code, &username)
+		if err != nil {
+			panic(err.Error())
+		}
+		ic.ID = id
+		ic.Code = code
+		ic.Username = username
+
+		res = append(res, ic)
+	}
+	defer db.Close()
+	return res
+}
+
 func getUserMeasurements(u user) []measurement {
 	db := dbConn()
 	result, err := db.Query("Select * FROM measurements where username=? ORDER BY date DESC", u.Username)
@@ -260,7 +333,7 @@ func getPrizeHistory() []prize {
 func getRankings() []measurement {
 	db := dbConn()
 
-	result, err := db.Query("select coalesce(min(waist), 0) as waist, username from measurements where username!='admin' group by username order by waist ASC")
+	result, err := db.Query("select coalesce(min(waist), 0) as waist, weight, username from measurements where username!='admin' group by username order by waist ASC")
 	if err != nil {
 		panic(err.Error())
 	}

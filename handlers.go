@@ -49,6 +49,39 @@ func loginHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "authentication successful"})
 }
 
+func deleteUserHandler(c *gin.Context) {
+	var userDel userDeletion
+
+	if err := c.ShouldBind(&userDel); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error()})
+		return
+	}
+
+	if strings.Trim(userDel.Username, " ") == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Username can't be empty"})
+		return
+	}
+	user := user{
+		Username: userDel.Username,
+	}
+	if !userExists(user) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "User doesn't exist"})
+		return
+	}
+
+	if !deleteUser(user) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Unable to delete user at this time"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Success!"})
+}
+
 func registrationHandler(c *gin.Context) {
 	var user user
 
@@ -139,6 +172,18 @@ func measurementHistoryHandler(c *gin.Context) {
 	measurements := getAllMeasurements()
 	c.JSON(http.StatusOK, gin.H{
 		"measurements": measurements})
+}
+
+func listUsersHandler(c *gin.Context) {
+	users := getAllUsers()
+	c.JSON(http.StatusOK, gin.H{
+		"users": users})
+}
+
+func listInviteCodesHandler(c *gin.Context) {
+	invites := getAllInviteCodes()
+	c.JSON(http.StatusOK, gin.H{
+		"invite-codes": invites})
 }
 
 func myMeasurementsHandler(c *gin.Context) {
