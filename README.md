@@ -19,15 +19,22 @@ It was a great way of learning some basics, I hope it helps other people learn a
 - Adding user management
 
 ## Docker Usage Instructions
-* docker run --name mysql -e MYSQL_ROOT_PASSWORD=<root_pass> -p 3306:3306 -d mysql:latest
-* On subsequent runs do docker start mysql
-* docker exec -it mysql /bin/bash
-* mysql -h localhost -u root -p
-* USE fitComp or CREATE DATABASE fitComp;
+* Run docker container for MySQL
+> ```docker run --name mysql -e MYSQL_ROOT_PASSWORD=<root_pass> -p 3306:3306 -d mysql:latest```
+* Access the container to create the database
+> ```docker exec -it mysql /bin/bash```
+* Connect to the database server
+> ```mysql -h localhost -u root -p```
+* Create the database
+> ```USE fitComp or CREATE DATABASE fitComp;```
+
+* If the machine is restarted or the container stopped, run the command below before starting the application
+  > ```docker start mysql```
 
 
 ## Things I would like to add
-* Use SSL for the webserver
+* Use SSL for the requests
+* Standarize the API schema
 * Add tests
 * Add a UI
 
@@ -36,6 +43,4 @@ It was a great way of learning some basics, I hope it helps other people learn a
 To build and run the program you need: 
 * [Golang installed](https://golang.org/doc/install) and [GOPATH configured](https://golang.org/doc/gopath_code.html)
 * Clone this repository
-* Build the code with `go build...`
-
- Example of build for linux x86_64: `env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o fitComp main.go`
+* Build the code with `go build .` or run with `go run .`
