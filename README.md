@@ -20,13 +20,13 @@ It was a great way of learning some basics, I hope it helps other people learn a
 
 ## Docker Usage Instructions
 * Run docker container for MySQL
-> ```docker run --name mysql -e MYSQL_ROOT_PASSWORD=<root_pass> -p 3306:3306 -d mysql:latest```
+  > ```docker run --name mysql -e MYSQL_ROOT_PASSWORD=<root_pass> -p 3306:3306 -d mysql:latest```
 * Access the container to create the database
-> ```docker exec -it mysql /bin/bash```
+  > ```docker exec -it mysql /bin/bash```
 * Connect to the database server
-> ```mysql -h localhost -u root -p```
+  > ```mysql -h localhost -u root -p```
 * Create the database
-> ```USE fitComp or CREATE DATABASE fitComp;```
+  > ```USE fitComp or CREATE DATABASE fitComp;```
 
 * If the machine is restarted or the container stopped, run the command below before starting the application
   > ```docker start mysql```
